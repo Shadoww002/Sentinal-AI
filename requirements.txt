@@ -1,12 +1,20 @@
-fastapi==0.103.1
-uvicorn==0.23.2
-# pydantic==2.4.2
-streamlit==1.27.0
-requests==2.31.0
-trafilatura==1.6.2
-spacy==3.7.1
-sentence-transformers==2.2.2
-transformers==4.34.0
-# faiss-cpu==1.7.4
-# torch==2.1.0 --extra-index-url https://download.pytorch.org/whl/cpu
-scikit-learn==1.3.1
+# --- Frontend (UI & Dashboard) ---
+streamlit>=1.30.0
+requests>=2.31.0
+
+# --- Backend (API & Routing) ---
+fastapi>=0.109.0
+uvicorn>=0.27.0
+
+# --- Reasoning Engine (Local LLM) ---
+ollama>=0.1.6
+
+# --- RAG Core (Retrieval & Embedding) ---
+gnews>=0.3.6
+sentence-transformers>=2.3.0
+faiss-cpu>=1.7.4
+
+# --- Note on Hardware ---
+# faiss-cpu is used here for maximum compatibility across all machines. 
+# If you are deploying this on a machine with a dedicated Nvidia GPU, 
+# you can swap 'faiss-cpu' for 'faiss-gpu' for faster vector searches.
