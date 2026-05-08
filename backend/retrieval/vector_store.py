@@ -4,7 +4,8 @@ from sentence_transformers import SentenceTransformer
 
 class EvidenceStore:
     def __init__(self):
-        self.encoder = SentenceTransformer('all-MiniLM-L6-v2')
+        # MPNet provides significantly higher accuracy for semantic search
+        self.encoder = SentenceTransformer('all-mpnet-base-v2')
         self.dimension = self.encoder.get_sentence_embedding_dimension()
         
     def get_top_evidence(self, claim: str, snippets: list[str], top_k: int = 2) -> list[str]:

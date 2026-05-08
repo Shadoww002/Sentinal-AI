@@ -1,21 +1,41 @@
-import spacy
+import ollama
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ClaimExtractor:
     def __init__(self):
-        # Load optimized pipeline
-        self.nlp = spacy.load("en_core_web_sm", disable=["textcat", "lemmatizer"])
+        self.model = "llama3"
 
-    def extract(self, text: str, max_claims: int = 3) -> list[str]:
-        doc = self.nlp(text)
-        claims = []
+    def extract(self, text: str, max_claims: int = 1) -> list[str]:
+        # 🚨 THE FIX: Force a complete factual sentence (Subject + Verb + Object)
+        prompt = f"""
+        You are a robotic fact-checker. Rewrite the following headline into a single, simple, verifiable sentence.
+        You MUST include the Subject, the Verb, and the Object. 
+        Strip out all opinions, questions, and adjectives. 
         
-        for sent in doc.sents:
-            # Look for objective entities
-            verifiable_entities = {'ORG', 'GPE', 'MONEY', 'DATE', 'PERCENT', 'QUANTITY'}
-            has_entity = any(ent.label_ in verifiable_entities for ent in sent.ents)
-            has_root_verb = any(token.dep_ == "ROOT" and token.pos_ == "VERB" for token in sent)
+        Example Input: "Decisive leader with street cred: Why BJP chose Suvendu Adhikari as Bengal CM"
+        Example Output: BJP chose Suvendu Adhikari as Bengal CM.
+        
+        Example Input: "The company's amazing revenue tragically dropped by 20% in Q3."
+        Example Output: The company revenue dropped by 20% in Q3.
+        
+        Headline: "{text}"
+        Output ONLY the clean sentence. No quotes, no lists, no explanations.
+        """
+        
+        try:
+            response = ollama.chat(model=self.model, messages=[
+                {"role": "user", "content": prompt}
+            ])
             
-            if has_entity and has_root_verb and 20 < len(sent.text) < 200:
-                claims.append(sent.text.strip())
+            # Clean up the output
+            query = response['message']['content'].strip(' "\'\n')
+            
+            if query:
+                return [query]
+            return [text]
                 
-        return claims[:max_claims] # Prevent bottlenecking downstream processes
+        except Exception as e:
+            logger.error(f"LLM Extraction failed: {e}")
+            return [text]

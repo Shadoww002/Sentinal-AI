@@ -1,5 +1,5 @@
 from backend.services.claim_extractor import ClaimExtractor
-from backend.verification.nli_verifier import NLIVerifier
+from backend.verification.nli_verifier import LLMVerifier
 # ... imports for Fetcher and EvidenceStore     
 from backend.retrieval.news_fetcher import NewsFetcher      
 from backend.retrieval.vector_store import EvidenceStore
@@ -7,7 +7,7 @@ from backend.retrieval.vector_store import EvidenceStore
 class FactCheckingPipeline:
     def __init__(self):
         self.extractor = ClaimExtractor()
-        self.verifier = NLIVerifier()
+        self.verifier = LLMVerifier()
         self.fetcher = NewsFetcher()
         self.store = EvidenceStore()
         
@@ -16,25 +16,25 @@ class FactCheckingPipeline:
         results = []
         
         for claim in claims:
-            # 1. Fetch live news (Now returns a list of dicts with URLs)
+            # 1. Fetch live news
             raw_sources = self.fetcher.search(claim)
             
-            # 2. Extract ONLY the text bodies to pass into FAISS for vector math
+            # 2. Extract text bodies for FAISS vector math
             snippets = [source['body'] for source in raw_sources]
             best_evidence_list = self.store.get_top_evidence(claim, snippets)
-            best_evidence = best_evidence_list[0] if best_evidence_list else "No evidence."
             
-            # 3. Verify
+            # 🚨 FIX: Pass the exact string the Verifier needs to short-circuit!
+            best_evidence = best_evidence_list[0] if best_evidence_list else "There is no currently available news or evidence regarding this claim."
+            
+            # 3. Verify (LLM generates its own explanation)
             verification = self.verifier.verify(claim, best_evidence)
-            
-            # 4. Explain
-            explanation = f"We found this claim to be {verification['verdict']} with {verification['confidence']:.0%} confidence because real-time evidence states: '{best_evidence}'"
             
             results.append({
                 "claim": claim,
                 "verdict": verification['verdict'],
-                "explanation": explanation,
-                "sources": raw_sources  # 
+                "explanation": verification['explanation'], # Pulled directly from Llama 3
+                "confidence": verification.get('confidence', 0.0), 
+                "sources": raw_sources
             })
             
         return self._aggregate(results)
