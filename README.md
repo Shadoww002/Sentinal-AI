@@ -102,8 +102,8 @@ graph TD
     D -->|Original Claim| G
     G -->|5. Verdict & Reasoning| C
     C -->|JSON Payload| B
-    B -->|Render Dashboard| A '''
-
+    B -->|Render Dashboard| A 
+```
 # 🛠️ Tech Stack
 
 ## 🎨 Frontend
