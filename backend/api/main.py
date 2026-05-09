@@ -26,4 +26,4 @@ async def verify_content(request: CheckRequest):
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
             
-    return pipeline.process(content)
+    return await pipeline.process(content)
