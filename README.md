@@ -14,11 +14,7 @@ By utilizing **Ollama** for local inference, Sentinel AI runs completely private
 
 ## 🎥 Demo
 
-> **Note to user:** *Replace the placeholder image below with a link to your actual YouTube video or upload a `.gif` showcasing the Streamlit UI in action.*
-
-[![Watch the Demo](https://img.shields.io/badge/Watch-Demo_Video-red?style=for-the-badge&logo=youtube)](YOUR_YOUTUBE_LINK_HERE)
-
-*(Insert a GIF or screenshot of the UI running a successful fact-check here)*
+https://github.com/user-attachments/assets/3fcf847c-7617-4219-a966-846d4d6b5780
 
 ---
 
