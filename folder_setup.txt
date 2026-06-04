@@ -17,7 +17,7 @@ fake_news_system/
 │   ├── scoring/              
 │   │   └── credibility.py    # Source reliability heuristics.
 │   ├── utils/                
-│   │   └── preprocessing.py  # DOM parsing and text normalization.
+│   │   └── preprocessing.py  # DOM parsing and text normalization
 │   └── config/               
 │       └── settings.py       # Pydantic BaseSettings for secure env var management.
 ├── frontend/                 # User Interface
